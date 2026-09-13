@@ -1,0 +1,2991 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Management System & Receipt Generator</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #c2410c;
+            /* Rich saffron / terracotta */
+            --primary-dark: #9a3412;
+            --primary-light: #ffedd5;
+            --secondary: #0f766e;
+            /* Deep Emerald teal */
+            --secondary-light: #ccfbf1;
+            --accent: #b45309;
+            /* Warm Gold */
+            --dark: #0f172a;
+            --slate-800: #1e293b;
+            --slate-600: #475569;
+            --slate-500: #64748b;
+            --slate-200: #e2e8f0;
+            --slate-100: #f1f5f9;
+            --slate-50: #f8fafc;
+            --bg-body: #f4f6f9;
+            --white: #ffffff;
+            --success: #15803d;
+            --success-bg: #dcfce7;
+            --danger: #b91c1c;
+            --danger-bg: #fee2e2;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.25s ease-in-out;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--slate-800);
+            min-height: 100vh;
+            padding: 20px 16px 40px 16px;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Top Header */
+        header {
+            background: linear-gradient(135deg, #7c2d12 0%, #c2410c 50%, #ea580c 100%);
+            color: var(--white);
+            padding: 24px 28px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 180px;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 58px;
+            height: 58px;
+            background: rgba(255, 255, 255, 0.22);
+            backdrop-filter: blur(8px);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #fef08a;
+            border: 1.5px solid rgba(255, 255, 255, 0.35);
+            flex-shrink: 0;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .header-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+            display: block;
+        }
+
+        .header-titles h1 {
+            font-size: 1.55rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-titles p {
+            font-size: 0.88rem;
+            opacity: 0.9;
+            margin-top: 3px;
+        }
+
+        .org-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.76rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .org-badge:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* User Role Pill / Card in Header */
+        .user-role-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            padding: 6px 14px;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+            color: var(--white);
+        }
+
+        .user-role-card:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #fef08a;
+            color: #7c2d12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            font-weight: 700;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-avatar.avatar-operator {
+            background: #ccfbf1;
+            color: #0f766e;
+        }
+
+        .user-info-text {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .user-role-title {
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .user-role-sub {
+            font-size: 0.7rem;
+            opacity: 0.88;
+            max-width: 170px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Operator Notice Banner */
+        .operator-notice-banner {
+            display: none;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            margin-bottom: 14px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: var(--transition);
+            text-decoration: none;
+            user-select: none;
+        }
+
+        .btn-white {
+            background: var(--white);
+            color: var(--primary-dark);
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-white:hover {
+            background: #fff7ed;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            box-shadow: 0 2px 8px rgba(194, 65, 12, 0.3);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(194, 65, 12, 0.4);
+        }
+
+        .btn-success {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #0d5f58;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: var(--white);
+            color: var(--slate-600);
+            border-color: var(--slate-200);
+        }
+
+        .btn-outline:hover {
+            background: var(--slate-100);
+            color: var(--slate-800);
+        }
+
+        .btn-danger-outline {
+            background: var(--white);
+            color: var(--danger);
+            border-color: #fecaca;
+        }
+
+        .btn-danger-outline:hover {
+            background: var(--danger-bg);
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            border: 1px solid var(--slate-200);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary);
+        }
+
+        .stat-card.stat-teal::after {
+            background: var(--secondary);
+        }
+
+        .stat-card.stat-amber::after {
+            background: var(--accent);
+        }
+
+        .stat-card.stat-blue::after {
+            background: #2563eb;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            flex-shrink: 0;
+        }
+
+        .stat-teal .stat-icon {
+            background: var(--secondary-light);
+            color: var(--secondary);
+        }
+
+        .stat-amber .stat-icon {
+            background: #fef3c7;
+            color: var(--accent);
+        }
+
+        .stat-blue .stat-icon {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .stat-info {
+            flex-grow: 1;
+        }
+
+        .stat-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--slate-500);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--slate-800);
+            line-height: 1.2;
+        }
+
+        .stat-sub {
+            font-size: 0.75rem;
+            color: var(--slate-500);
+            margin-top: 4px;
+        }
+
+        /* Main Workspace Layout */
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 430px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Panels */
+        .panel {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--slate-200);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            background: var(--slate-50);
+            border-bottom: 1px solid var(--slate-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--slate-800);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-body {
+            padding: 20px;
+        }
+
+        /* Form Controls */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--slate-600);
+            margin-bottom: 6px;
+        }
+
+        label span.req {
+            color: var(--danger);
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group i.input-icon {
+            position: absolute;
+            left: 12px;
+            color: var(--slate-500);
+            font-size: 0.88rem;
+            pointer-events: none;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="time"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            color: var(--slate-800);
+            background: var(--white);
+            transition: var(--transition);
+        }
+
+        .input-group input,
+        .input-group select {
+            padding-left: 36px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.12);
+        }
+
+        /* Quick Amount Chips */
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .amount-chip {
+            background: var(--slate-100);
+            border: 1px solid var(--slate-200);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--slate-600);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .amount-chip:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: #fdba74;
+        }
+
+        .amount-chip.active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        /* Radio & Toggle */
+        .payment-pill-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .pill-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 4px;
+            border: 1.5px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.76rem;
+            font-weight: 600;
+            text-align: center;
+            gap: 4px;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        .pill-label input {
+            display: none;
+        }
+
+        .pill-label i {
+            font-size: 1rem;
+            color: var(--slate-500);
+        }
+
+        .pill-label:has(input:checked) {
+            background: #fff7ed;
+            border-color: var(--primary);
+            color: var(--primary-dark);
+        }
+
+        .pill-label:has(input:checked) i {
+            color: var(--primary);
+        }
+
+        /* Form Action Buttons */
+        .form-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .form-action-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* Search & Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            background: var(--slate-50);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--slate-200);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 220px;
+            position: relative;
+        }
+
+        .search-box input {
+            padding-left: 36px;
+            background: var(--white);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--slate-500);
+        }
+
+        .filter-select {
+            width: auto;
+            min-width: 140px;
+            background: var(--white);
+        }
+
+        /* Table Styling */
+        .table-responsive {
+            overflow-x: auto;
+            max-height: 520px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--slate-200);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            text-align: left;
+            background: var(--white);
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background: var(--slate-100);
+            color: var(--slate-600);
+            font-weight: 700;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 12px 14px;
+            border-bottom: 1.5px solid var(--slate-200);
+            z-index: 10;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--slate-200);
+            transition: var(--transition);
+        }
+
+        tbody tr:hover {
+            background-color: #fefce8;
+        }
+
+        td {
+            padding: 12px 14px;
+            vertical-align: middle;
+        }
+
+        .donor-name-cell {
+            font-weight: 700;
+            color: var(--slate-800);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .donor-meta {
+            font-size: 0.75rem;
+            color: var(--slate-500);
+            font-weight: normal;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .donor-society-tag {
+            background: #f1f5f9;
+            color: #334155;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.73rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .donor-email-tag {
+            background: #f0fdf4;
+            color: #166534;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.73rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .entered-by-tag {
+            background: #f8fafc;
+            color: #64748b;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.70rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        .receipt-tag {
+            font-family: monospace;
+            font-weight: 700;
+            font-size: 0.78rem;
+            background: var(--slate-100);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--slate-600);
+            border: 1px solid var(--slate-200);
+            display: inline-block;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .category-badge.cat-annadaan {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .category-badge.cat-education {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .category-badge.cat-medical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .category-badge.cat-building {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .category-badge.cat-general {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .payment-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--slate-600);
+        }
+
+        .amount-cell {
+            font-weight: 800;
+            font-size: 0.98rem;
+            color: var(--secondary);
+            text-align: right;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 4px;
+            justify-content: flex-end;
+        }
+
+        .empty-state {
+            padding: 48px 20px;
+            text-align: center;
+            color: var(--slate-500);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #cbd5e1;
+            margin-bottom: 12px;
+        }
+
+        /* Modal / Receipt Print View */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            max-width: 650px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-card-sm {
+            max-width: 500px;
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            background: var(--slate-50);
+            border-bottom: 1px solid var(--slate-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        /* Role Selector Cards */
+        .role-selector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .role-option-card {
+            border: 2px solid var(--slate-200);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--slate-50);
+            position: relative;
+        }
+
+        .role-option-card:hover {
+            border-color: var(--primary);
+            background: #fff7ed;
+            transform: translateY(-2px);
+        }
+
+        .role-option-card.selected {
+            border-color: var(--primary);
+            background: #fff7ed;
+            box-shadow: 0 4px 12px rgba(194, 65, 12, 0.15);
+        }
+
+        .role-icon-wrap {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            margin: 0 auto 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+        .role-icon-wrap.operator-icon {
+            background: #ccfbf1;
+            color: #0f766e;
+        }
+
+        .role-opt-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--slate-800);
+        }
+
+        .role-opt-desc {
+            font-size: 0.74rem;
+            color: var(--slate-500);
+            margin-top: 4px;
+            line-height: 1.35;
+        }
+
+        /* Operator Management List Styles */
+        .operator-list {
+            margin-top: 14px;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-sm);
+            max-height: 200px;
+            overflow-y: auto;
+            background: var(--white);
+        }
+
+        .operator-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--slate-100);
+        }
+
+        .operator-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .operator-list-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .operator-list-name {
+            font-weight: 700;
+            font-size: 0.86rem;
+            color: var(--slate-800);
+        }
+
+        .operator-list-email {
+            font-size: 0.76rem;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Printable Slip Styles */
+        .receipt-slip {
+            background: #fffdfa;
+            border: 2px solid #b45309;
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            box-shadow: inset 0 0 0 4px #fef3c7;
+        }
+
+        .receipt-header {
+            text-align: center;
+            border-bottom: 2px dashed #d97706;
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+        }
+
+        .receipt-org-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #7c2d12;
+            letter-spacing: 0.05em;
+        }
+
+        .receipt-org-sub {
+            font-size: 0.78rem;
+            color: #78350f;
+            margin-top: 3px;
+        }
+
+        .receipt-badge-title {
+            display: inline-block;
+            background: #b45309;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 12px;
+            border-radius: 20px;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .receipt-meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            background: rgba(254, 243, 199, 0.4);
+            padding: 10px 14px;
+            border-radius: 8px;
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px dotted #e2e8f0;
+            font-size: 0.88rem;
+        }
+
+        .receipt-label {
+            font-weight: 600;
+            color: #78350f;
+        }
+
+        .receipt-value {
+            font-weight: 700;
+            color: #1e293b;
+            text-align: right;
+        }
+
+        .receipt-amount-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1.5px solid #d97706;
+            padding: 12px 16px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 16px 0;
+        }
+
+        .receipt-amount-total {
+            font-size: 1.45rem;
+            font-weight: 900;
+            color: #9a3412;
+        }
+
+        .receipt-words {
+            font-size: 0.78rem;
+            font-style: italic;
+            color: #78350f;
+            margin-top: 2px;
+        }
+
+        .receipt-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 28px;
+            padding-top: 14px;
+            border-top: 1px dashed #cbd5e1;
+            font-size: 0.78rem;
+            color: #64748b;
+        }
+
+        .sig-box {
+            text-align: center;
+            width: 140px;
+        }
+
+        .sig-line {
+            border-top: 1px solid #475569;
+            margin-bottom: 4px;
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--dark);
+            color: var(--white);
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            z-index: 2000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.toast-success {
+            background: var(--success);
+        }
+
+        .toast.toast-danger {
+            background: var(--danger);
+        }
+
+        /* Print Media Query */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .modal-overlay,
+            .modal-card,
+            .receipt-slip,
+            .receipt-slip * {
+                visibility: visible;
+            }
+
+            .modal-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: none;
+                padding: 0;
+                display: block;
+            }
+
+            .modal-card {
+                box-shadow: none;
+                border: none;
+                max-width: 100%;
+                width: 100%;
+                max-height: none;
+            }
+
+            .modal-header,
+            .modal-actions-bar {
+                display: none !important;
+            }
+
+            .modal-body {
+                padding: 0;
+            }
+
+            .receipt-slip {
+                border: 2px solid #000 !important;
+                box-shadow: none !important;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Header -->
+        <header>
+            <div class="header-brand">
+                <div class="header-icon" title="Click to upload/change logo image" onclick="triggerLogoUpload()">
+                    <img id="headerLogoImg" src="aa.jpg" alt="Logo Icon"
+                        onerror="this.src='https://cdn-icons-png.flaticon.com/512/2907/2907253.png'; this.onerror=function(){ this.style.display='none'; document.getElementById('headerFallbackIcon').style.display='flex'; };">
+                    <div id="headerFallbackIcon"
+                        style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-hands-praying"></i>
+                    </div>
+                </div>
+                <input type="file" id="logoUploadInput" accept="image/*" style="display: none;"
+                    onchange="handleLogoUpload(event)">
+                <div class="header-titles">
+                    <h1 id="orgDisplayTitle">Shree Kalyan Dham Trust</h1>
+                    <p>Donation Entry, Record Ledger & Instant Receipt System</p>
+                    <div style="margin-top: 6px;">
+                        <span class="org-badge" onclick="editOrgName()"><i class="fa-solid fa-pen-to-square"></i> <span
+                                id="orgSubtitle">Reg. No: E/14295/GUJ • Society & Temple Seva</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <!-- User Role Switcher Pill -->
+                <div class="user-role-card" onclick="openRoleModal()" title="Click to Switch User / Sign in via Email">
+                    <div class="user-avatar" id="headerUserAvatar">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div class="user-info-text">
+                        <div class="user-role-title">
+                            <span id="headerRoleName">HOST (ADMIN)</span>
+                            <i class="fa-solid fa-chevron-down" style="font-size: 0.68rem; opacity: 0.85;"></i>
+                        </div>
+                        <div class="user-role-sub" id="headerRoleDetail">Full Control Access</div>
+                    </div>
+                </div>
+
+                <!-- Host User Management (Add Operator by Email) Button -->
+                <button class="btn btn-white host-only-action" id="manageUsersBtn" onclick="openUserManagementModal()" title="Host: Manage & Add Operator Emails for Entry-Only Access">
+                    <i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> Add Operator Email
+                </button>
+
+                <!-- Export CSV Button -->
+                <button class="btn btn-white" onclick="exportToCSV()"><i class="fa-solid fa-file-excel"></i> Export CSV</button>
+
+                <!-- Backup & Restore Buttons (Host Only) -->
+                <button class="btn btn-white host-only-action" id="backupBtn" onclick="backupJSON()"><i class="fa-solid fa-download"></i> Backup Data</button>
+                <label class="btn btn-white host-only-action" id="restoreBtnWrap" style="cursor: pointer;">
+                    <i class="fa-solid fa-upload"></i> Restore
+                    <input type="file" id="restoreFileInput" accept=".json" style="display: none;"
+                        onchange="restoreJSON(event)">
+                </label>
+            </div>
+        </header>
+
+        <!-- Stats Counter Bar -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                <div class="stat-info">
+                    <div class="stat-title">Total Donations</div>
+                    <div class="stat-value" id="statTotalAmount">₹0</div>
+                    <div class="stat-sub">Lifetime Collection</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-teal">
+                <div class="stat-icon"><i class="fa-solid fa-calendar-day"></i></div>
+                <div class="stat-info">
+                    <div class="stat-title">Today's Collection</div>
+                    <div class="stat-value" id="statTodayAmount">₹0</div>
+                    <div class="stat-sub" id="statTodayCount">0 entries today</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-amber">
+                <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-info">
+                    <div class="stat-title">Total Donors</div>
+                    <div class="stat-value" id="statDonorCount">0</div>
+                    <div class="stat-sub">Receipts Issued</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-blue">
+                <div class="stat-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                <div class="stat-info">
+                    <div class="stat-title">Avg. Donation</div>
+                    <div class="stat-value" id="statAvgDonation">₹0</div>
+                    <div class="stat-sub">Per Contributor</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <div class="workspace-grid">
+
+            <!-- Form Panel: New Donation Entry -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i>
+                        <span id="formTitle">New Donation Entry</span>
+                    </div>
+                    <span class="receipt-tag" id="previewReceiptNo">DON-2026-001</span>
+                </div>
+
+                <div class="panel-body">
+                    <!-- Operator Mode Notice Banner -->
+                    <div class="operator-notice-banner" id="operatorModeNotice">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-user-pen" style="font-size: 1.1rem;"></i>
+                            <div>
+                                <div><strong>Entry Operator Mode:</strong> You have access ONLY to enter donation details.</div>
+                                <div id="operatorEmailBannerText" style="font-size: 0.72rem; font-weight: normal; color: #3b82f6;"></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="openRoleModal()" style="padding: 3px 8px; font-size: 0.72rem;">Switch</button>
+                    </div>
+
+                    <form id="donationForm" onsubmit="handleFormSubmit(event)">
+                        <input type="hidden" id="editEntryId" value="">
+
+                        <!-- Date and Receipt No -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="donationDate">Date <span class="req">*</span></label>
+                                <input type="date" id="donationDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receiptNo">Receipt No. <span class="req">*</span></label>
+                                <input type="text" id="receiptNo" required placeholder="Auto generated">
+                            </div>
+                        </div>
+
+                        <!-- Donor Name -->
+                        <div class="form-group">
+                            <label for="donorName">Donor Full Name <span class="req">*</span></label>
+                            <div class="input-group">
+                                <i class="fa-solid fa-user input-icon"></i>
+                                <input type="text" id="donorName" placeholder="e.g. Rameshchandra S. Patel" required autofocus>
+                            </div>
+                        </div>
+
+                        <!-- Mobile & Email Address Row -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="donorPhone">Mobile / WhatsApp No.</label>
+                                <div class="input-group">
+                                    <i class="fa-solid fa-phone input-icon"></i>
+                                    <input type="tel" id="donorPhone" placeholder="10-digit number">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="donorEmail">Donor Email Address</label>
+                                <div class="input-group">
+                                    <i class="fa-solid fa-envelope input-icon"></i>
+                                    <input type="email" id="donorEmail" placeholder="e.g. donor@gmail.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Society Name / Flat / Address -->
+                        <div class="form-group">
+                            <label for="donorSociety">Society Name / Flat No. / Address</label>
+                            <div class="input-group">
+                                <i class="fa-solid fa-city input-icon"></i>
+                                <input type="text" id="donorSociety" placeholder="e.g. Gokuldham Society, A-102">
+                            </div>
+                        </div>
+
+                        <!-- Amount and Quick Chips -->
+                        <div class="form-group">
+                            <label for="donationAmount">Donation Amount (₹) <span class="req">*</span></label>
+                            <div class="input-group">
+                                <i class="fa-solid fa-indian-rupee-sign input-icon"></i>
+                                <input type="number" id="donationAmount" placeholder="0.00" min="1" step="any" required
+                                    oninput="syncAmountChips()">
+                            </div>
+                            <div class="chip-container">
+                                <span class="amount-chip" onclick="setQuickAmount(501)">₹501</span>
+                                <span class="amount-chip" onclick="setQuickAmount(1100)">₹1,100</span>
+                                <span class="amount-chip" onclick="setQuickAmount(2100)">₹2,100</span>
+                                <span class="amount-chip" onclick="setQuickAmount(5100)">₹5,100</span>
+                                <span class="amount-chip" onclick="setQuickAmount(11000)">₹11,000</span>
+                                <span class="amount-chip" onclick="setQuickAmount(21000)">₹21,000</span>
+                                <span class="amount-chip" onclick="setQuickAmount(51000)">₹51,000</span>
+                            </div>
+                        </div>
+
+                        <!-- Purpose / Cause -->
+                        <div class="form-group">
+                            <label for="donationCategory">Donation Purpose / Cause <span class="req">*</span></label>
+                            <div class="input-group">
+                                <i class="fa-solid fa-hand-holding-heart input-icon"></i>
+                                <select id="donationCategory" required>
+                                    <option value="Navratri special">Navratri special (નવરાત્રી વિશેષ)</option>
+                                    <option value="General Fund (સમાજ દાન)">General Fund (સમાજ દાન)</option>
+                                    <option value="Temple / Mandir Seva (શરગાણ માતાજી)">Temple / Mandir Seva (શરગાણ માતાજી)</option>
+                                    <option value="Other / Special Seva">Other / Special Seva</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Payment Mode Selector -->
+                        <div class="form-group">
+                            <label>Payment Mode <span class="req">*</span></label>
+                            <div class="payment-pill-group">
+                                <label class="pill-label">
+                                    <input type="radio" name="payMode" value="Cash" checked onchange="toggleRefField()">
+                                    <i class="fa-solid fa-money-bill-wave"></i> Cash
+                                </label>
+                                <label class="pill-label">
+                                    <input type="radio" name="payMode" value="UPI" onchange="toggleRefField()">
+                                    <i class="fa-solid fa-qrcode"></i> UPI / GPay
+                                </label>
+                                <label class="pill-label">
+                                    <input type="radio" name="payMode" value="Bank / Cheque"
+                                        onchange="toggleRefField()">
+                                    <i class="fa-solid fa-building-columns"></i> Bank/Cheque
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Reference No / Cheque No (Optional) -->
+                        <div class="form-group" id="refGroup" style="display: none;">
+                            <label for="payRef">UPI Ref / UTR / Cheque No.</label>
+                            <div class="input-group">
+                                <i class="fa-solid fa-hashtag input-icon"></i>
+                                <input type="text" id="payRef" placeholder="e.g. UPI Ref / Cheque No.">
+                            </div>
+                        </div>
+
+                        <!-- Remarks / In memory of -->
+                        <div class="form-group">
+                            <label for="donationRemarks">Remarks / Sankalp</label>
+                            <textarea id="donationRemarks" rows="2" placeholder="Note or In Memory of..."></textarea>
+                        </div>
+
+                        <!-- Authorized Signatory Name -->
+                        <div class="form-group">
+                            <label for="authorizedSignatory">Authorized Signatory / Receiver Name</label>
+                            <div class="input-group">
+                                <i class="fa-solid fa-signature input-icon"></i>
+                                <input type="text" id="authorizedSignatory" placeholder="e.g. Ramesh Patel / Trustee">
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" id="saveBtn">
+                                <i class="fa-solid fa-floppy-disk"></i> <span id="saveBtnText">Save Donation Entry</span>
+                            </button>
+                            <div class="form-action-row">
+                                <button type="button" class="btn btn-success" onclick="saveAndPrint()">
+                                    <i class="fa-solid fa-print"></i> Save & Print Slip
+                                </button>
+                                <button type="button" class="btn btn-outline" onclick="resetForm()">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset Form
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- Ledger / Records Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="fa-solid fa-book-bookmark" style="color: var(--secondary);"></i>
+                        <span>Donation Ledger & Records</span>
+                    </div>
+                    <span class="org-badge" id="recordCountBadge">0 Records</span>
+                </div>
+
+                <div class="panel-body">
+                    <!-- Search & Filters -->
+                    <div class="filter-bar">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="searchInput"
+                                placeholder="Search by name, email, society, phone, receipt no..." oninput="filterEntries()">
+                        </div>
+
+                        <select class="filter-select" id="filterCategory" onchange="filterEntries()">
+                            <option value="">All Categories</option>
+                            <option value="Navratri">Navratri Special</option>
+                            <option value="General">General Fund (સમાજ દાન)</option>
+                            <option value="Temple">Temple / Mandir Seva</option>
+                            <option value="Other">Other Seva</option>
+                        </select>
+
+                        <select class="filter-select" id="filterMode" onchange="filterEntries()">
+                            <option value="">All Modes</option>
+                            <option value="Cash">Cash</option>
+                            <option value="UPI">UPI</option>
+                            <option value="Bank / Cheque">Bank / Cheque</option>
+                        </select>
+
+                        <button class="btn btn-outline btn-sm" onclick="clearFilters()" title="Reset Filters">
+                            <i class="fa-solid fa-filter-circle-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Records Table -->
+                    <div class="table-responsive">
+                        <table id="recordsTable">
+                            <thead>
+                                <tr>
+                                    <th>Receipt / Date</th>
+                                    <th>Donor, Email & Society Details</th>
+                                    <th>Purpose & Mode</th>
+                                    <th style="text-align: right;">Amount (₹)</th>
+                                    <th style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recordsTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Modal: User Role Switcher & Email Login -->
+    <div class="modal-overlay" id="roleModal" onclick="handleRoleModalBackdrop(event)">
+        <div class="modal-card modal-card-sm">
+            <div class="modal-header">
+                <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--slate-800);">
+                    <i class="fa-solid fa-users-gear" style="color: var(--primary);"></i> User Login & Role Switcher
+                </h3>
+                <button class="btn btn-outline btn-sm" onclick="closeRoleModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div style="background: #fff7ed; border: 1px solid #fdba74; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.82rem; color: #9a3412; margin-bottom: 16px;">
+                    <i class="fa-solid fa-info-circle"></i> <strong>Host Access Notice:</strong> Users added via Email get access <strong>ONLY to enter details</strong>. Host has full administrative access.
+                </div>
+
+                <!-- Email Sign In Option (Direct Email Access for Operators) -->
+                <div style="margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px dashed var(--slate-200);">
+                    <label for="loginEmailInput">Sign in with Authorized Email (Entry-Only Access):</label>
+                    <div style="display: flex; gap: 8px; margin-top: 6px;">
+                        <div class="input-group" style="flex: 1;">
+                            <i class="fa-solid fa-envelope input-icon"></i>
+                            <input type="email" id="loginEmailInput" placeholder="Enter your authorized email address">
+                        </div>
+                        <button class="btn btn-success" type="button" onclick="handleEmailLogin()" style="flex-shrink: 0;">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
+                        </button>
+                    </div>
+                    <div style="font-size: 0.72rem; color: var(--slate-500); margin-top: 4px;">
+                        Only emails authorized by the Host can log in to enter details.
+                    </div>
+                </div>
+
+                <p style="font-size: 0.84rem; font-weight: 700; color: var(--slate-700); margin-bottom: 12px;">
+                    Or Switch Mode Directly:
+                </p>
+
+                <div class="role-selector-grid">
+                    <!-- Host Option -->
+                    <div class="role-option-card" id="roleOptHost" onclick="selectRoleTab('host')">
+                        <div class="role-icon-wrap">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <div class="role-opt-title">Host (Admin)</div>
+                        <div class="role-opt-desc">Full access: Add, Edit, Delete, Backup & User Management</div>
+                    </div>
+
+                    <!-- Entry Operator Option -->
+                    <div class="role-option-card" id="roleOptOperator" onclick="selectRoleTab('operator')">
+                        <div class="role-icon-wrap operator-icon">
+                            <i class="fa-solid fa-user-pen"></i>
+                        </div>
+                        <div class="role-opt-title">Entry Operator</div>
+                        <div class="role-opt-desc">Restricted: ONLY enter donation details & print slips</div>
+                    </div>
+                </div>
+
+                <!-- Host PIN Section (Shown when switching to Host) -->
+                <div id="hostPinSection" style="display: none; margin-bottom: 16px;">
+                    <label for="hostPinInput">Enter Host Security PIN <span class="req">*</span></label>
+                    <div class="input-group">
+                        <i class="fa-solid fa-key input-icon"></i>
+                        <input type="password" id="hostPinInput" placeholder="Default PIN: 1234" maxlength="10">
+                    </div>
+                    <div style="font-size: 0.72rem; color: var(--slate-500); margin-top: 4px;">
+                        Default PIN is <code>1234</code>.
+                    </div>
+                </div>
+
+                <!-- Operator Name Section (Shown when switching to Operator) -->
+                <div id="operatorNameSection" style="display: none; margin-bottom: 16px;">
+                    <label for="operatorNameInput">Operator / Volunteer Name or Counter</label>
+                    <div class="input-group">
+                        <i class="fa-solid fa-id-badge input-icon"></i>
+                        <input type="text" id="operatorNameInput" placeholder="e.g. Counter 1 / Pooja / Kishan">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button class="btn btn-outline" onclick="closeRoleModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="confirmRoleSwitch()">
+                        <i class="fa-solid fa-check"></i> Apply Selected Mode
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Host User Management (Add Operator by Email) -->
+    <div class="modal-overlay" id="userManageModal" onclick="handleUserManageBackdrop(event)">
+        <div class="modal-card modal-card-sm">
+            <div class="modal-header">
+                <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--slate-800);">
+                    <i class="fa-solid fa-user-shield" style="color: var(--primary);"></i> Host: Add Operator Access via Email
+                </h3>
+                <button class="btn btn-outline btn-sm" onclick="closeUserManagementModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <p style="font-size: 0.83rem; color: var(--slate-600); margin-bottom: 14px;">
+                    Add authorized operator emails below. Users logging in with these emails will be granted <strong>access ONLY to the enter details feature</strong>.
+                </p>
+
+                <!-- Add Operator Form -->
+                <form id="addOperatorForm" onsubmit="handleAddOperatorSubmit(event)">
+                    <div class="form-group">
+                        <label for="newOpEmail">Operator Email Address <span class="req">*</span></label>
+                        <div class="input-group">
+                            <i class="fa-solid fa-envelope input-icon"></i>
+                            <input type="email" id="newOpEmail" placeholder="e.g. operator1@gmail.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newOpName">Operator Full Name / Counter Tag <span class="req">*</span></label>
+                        <div class="input-group">
+                            <i class="fa-solid fa-user input-icon"></i>
+                            <input type="text" id="newOpName" placeholder="e.g. Kishan (Counter 1)" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fa-solid fa-plus"></i> Authorize Operator Email
+                    </button>
+                </form>
+
+                <!-- List of Authorized Operators -->
+                <div style="margin-top: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 0.84rem; font-weight: 700; color: var(--slate-700);">Authorized Entry Operators:</span>
+                        <span class="org-badge" id="opCountBadge" style="background: #e2e8f0; color: #334155;">0 Users</span>
+                    </div>
+
+                    <div class="operator-list" id="operatorListContainer">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Host PIN Change Section -->
+                <div style="margin-top: 20px; padding-top: 14px; border-top: 1px dashed var(--slate-200);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.82rem; color: var(--slate-600);">Host Security PIN: <strong>****</strong></span>
+                        <button class="btn btn-outline btn-sm" onclick="changeHostPIN()"><i class="fa-solid fa-key"></i> Change PIN</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                    <button class="btn btn-outline" onclick="closeUserManagementModal()">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Printable Receipt Slip -->
+    <div class="modal-overlay" id="receiptModal" onclick="handleModalBackdrop(event)">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--slate-800);">
+                    <i class="fa-solid fa-receipt" style="color: var(--primary);"></i> Official Donation Receipt Slip
+                </h3>
+                <button class="btn btn-outline btn-sm" onclick="closeReceiptModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Receipt Printable Content -->
+                <div class="receipt-slip" id="printableSlip">
+                    <div class="receipt-header">
+                        <img id="slipLogoImg" src="aa.jpg" alt="Logo Icon"
+                            style="width: 46px; height: 46px; object-fit: cover; border-radius: 50%; margin-bottom: 6px; border: 1.5px solid #d97706; display: inline-block;"
+                            onerror="this.src='https://cdn-icons-png.flaticon.com/512/2907/2907253.png'; this.onerror=function(){ this.style.display='none'; };">
+                        <div class="receipt-org-name" id="slipOrgName">SHREE KALYAN DHAM TRUST</div>
+                        <div class="receipt-org-sub" id="slipOrgSub">Registered Charitable Trust • Society & Temple Seva</div>
+                        <div class="receipt-badge-title">Official Donation Receipt</div>
+                    </div>
+
+                    <div class="receipt-meta-grid">
+                        <div><strong>Receipt No:</strong> <span id="slipReceiptNo">DON-2026-001</span></div>
+                        <div style="text-align: right;"><strong>Date:</strong> <span id="slipDate">13-09-2026</span></div>
+                    </div>
+
+                    <div class="receipt-row">
+                        <span class="receipt-label">Received with thanks from:</span>
+                        <span class="receipt-value" id="slipDonorName">Shri Rameshchandra Patel</span>
+                    </div>
+
+                    <div class="receipt-row" id="slipSocietyRow">
+                        <span class="receipt-label">Society / Address:</span>
+                        <span class="receipt-value" id="slipDonorSociety">Gokuldham Society, A-102</span>
+                    </div>
+
+                    <div class="receipt-row" id="slipPhoneRow">
+                        <span class="receipt-label">Mobile Number:</span>
+                        <span class="receipt-value" id="slipDonorPhone">+91 9876543210</span>
+                    </div>
+
+                    <div class="receipt-row" id="slipEmailRow">
+                        <span class="receipt-label">Email Address:</span>
+                        <span class="receipt-value" id="slipDonorEmail">donor@example.com</span>
+                    </div>
+
+                    <div class="receipt-row" id="slipCategoryRow">
+                        <span class="receipt-label">Donation Purpose / Cause:</span>
+                        <span class="receipt-value" id="slipCategoryVal">Navratri special (નવરાત્રી વિશેષ)</span>
+                    </div>
+
+                    <div class="receipt-row" id="slipPayModeRow">
+                        <span class="receipt-label">Payment Mode:</span>
+                        <span class="receipt-value" id="slipPayMode">UPI / Online (Ref: 4291882910)</span>
+                    </div>
+
+                    <div class="receipt-row" id="slipRemarksRow">
+                        <span class="receipt-label">Sankalp / In Memory of:</span>
+                        <span class="receipt-value" id="slipRemarks">-</span>
+                    </div>
+
+                    <div class="receipt-amount-box">
+                        <div>
+                            <div style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: #78350f;">
+                                Amount Received</div>
+                            <div class="receipt-words" id="slipAmountWords">Rupees Five Thousand One Hundred Only</div>
+                        </div>
+                        <div class="receipt-amount-total" id="slipAmount">₹5,100</div>
+                    </div>
+
+                    <div class="receipt-footer">
+                        <div>
+                            <p>• Thank you for your benevolent noble contribution.</p>
+                            <p>• May divine blessings be with you and your family.</p>
+                            <p id="slipEnteredBy" style="margin-top: 4px; font-size: 0.70rem; color: #94a3b8;"></p>
+                        </div>
+                        <div class="sig-box">
+                            <div style="height: 25px;"></div>
+                            <div class="sig-line"></div>
+                            <div id="slipSignatoryName" style="font-weight: 700; color: #1e293b; font-size: 0.82rem;">
+                                Authorized Signatory</div>
+                            <span style="font-size: 0.72rem; color: #64748b;">(Authorized Signatory)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Action Buttons (Hidden when printed) -->
+                <div class="modal-actions-bar"
+                    style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                    <button class="btn btn-outline" onclick="shareOnWhatsApp()">
+                        <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> WhatsApp Receipt
+                    </button>
+                    <button class="btn btn-primary" onclick="window.print()">
+                        <i class="fa-solid fa-print"></i> Print Official Slip
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast" id="toastMessage">
+        <i class="fa-solid fa-check-circle"></i>
+        <span id="toastText">Entry saved successfully!</span>
+    </div>
+
+    <script>
+        // Storage Keys
+        const STORAGE_KEY = 'DONATION_APP_ENTRIES_V3';
+        const ORG_STORAGE_KEY = 'DONATION_APP_ORG_INFO_V3';
+        const ROLE_STORAGE_KEY = 'DONATION_ACTIVE_ROLE_V1';
+        const OPERATOR_NAME_KEY = 'DONATION_OPERATOR_NAME_V1';
+        const ACTIVE_EMAIL_KEY = 'DONATION_ACTIVE_EMAIL_V1';
+        const PIN_STORAGE_KEY = 'DONATION_HOST_PIN_V1';
+        const HOST_EMAIL_KEY = 'DONATION_HOST_EMAIL_V1';
+        const OPERATORS_STORAGE_KEY = 'DONATION_AUTHORIZED_OPERATORS_V1';
+
+        // State
+        let entries = [];
+        let currentViewingEntry = null;
+        let currentRole = 'host'; // 'host' or 'operator'
+        let operatorName = 'Operator';
+        let activeUserEmail = '';
+        let hostPin = '1234';
+        let hostEmail = 'admin@kalyandham.org';
+        let selectedRoleInModal = 'host';
+
+        // Authorized Operator Emails (Added by Host for "Entry Details Only" Access)
+        let authorizedOperators = [
+            { email: 'operator1@gmail.com', name: 'Kishan Patel', dateAdded: '2026-09-13' },
+            { email: 'volunteer@kalyandham.org', name: 'Pooja Shah (Counter 1)', dateAdded: '2026-09-13' }
+        ];
+
+        let orgInfo = {
+            name: 'Shree Kalyan Dham Trust',
+            subtitle: 'Reg. No: E/14295/GUJ • Society & Temple Seva',
+            address: 'Charity Center, Station Road, Ahmedabad'
+        };
+
+        // Fallback Demo Entries
+        const demoEntries = [
+            {
+                id: 'DON-INIT-01',
+                date: '2026-09-13',
+                receiptNo: 'DON-2026-001',
+                donorName: 'Rameshchandra S. Patel',
+                donorEmail: 'ramesh.patel@gmail.com',
+                donorPhone: '9876543210',
+                donorSociety: 'Gokuldham Society, A-102',
+                amount: 5100,
+                category: 'Navratri special (નવરાત્રી વિશેષ)',
+                payMode: 'UPI',
+                payRef: 'UPI-98271102',
+                remarks: 'Navratri Mahotsav Seva',
+                signatory: 'Ramesh Patel (Trustee)',
+                enteredBy: 'Host (Admin)',
+                timestamp: Date.now() - 3600000
+            },
+            {
+                id: 'DON-INIT-02',
+                date: '2026-09-13',
+                receiptNo: 'DON-2026-002',
+                donorName: 'Jayeshbhai M. Shah',
+                donorEmail: 'jayesh.shah@outlook.com',
+                donorPhone: '9825012345',
+                donorSociety: 'Shivdhara Complex, Flat 404',
+                amount: 2100,
+                category: 'Temple / Mandir Seva (શરગાણ માતાજી)',
+                payMode: 'Cash',
+                payRef: '',
+                remarks: 'Mataji Aarti Seva',
+                signatory: 'Kishan Sevadar',
+                enteredBy: 'Operator (operator1@gmail.com)',
+                timestamp: Date.now() - 1800000
+            }
+        ];
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            loadAuthorizedOperators();
+            loadUserRole();
+            checkUrlEmailParam();
+            loadOrgInfo();
+            loadEntries();
+            initDefaultDate();
+            generateNextReceiptNo();
+            renderDashboard();
+            applyRolePermissions();
+        });
+
+        // Load & Save Authorized Operators
+        function loadAuthorizedOperators() {
+            const saved = localStorage.getItem(OPERATORS_STORAGE_KEY);
+            if (saved) {
+                try {
+                    authorizedOperators = JSON.parse(saved);
+                } catch (e) {
+                    console.error("Failed to parse operators", e);
+                }
+            } else {
+                saveAuthorizedOperators();
+            }
+
+            const savedHostEmail = localStorage.getItem(HOST_EMAIL_KEY);
+            if (savedHostEmail) hostEmail = savedHostEmail;
+        }
+
+        function saveAuthorizedOperators() {
+            localStorage.setItem(OPERATORS_STORAGE_KEY, JSON.stringify(authorizedOperators));
+        }
+
+        // Check if URL has ?email= or ?user=
+        function checkUrlEmailParam() {
+            const params = new URLSearchParams(window.location.search);
+            const emailParam = params.get('email') || params.get('user');
+            if (emailParam) {
+                loginWithEmail(emailParam.trim(), true);
+            }
+        }
+
+        // User Role Management
+        function loadUserRole() {
+            const savedRole = localStorage.getItem(ROLE_STORAGE_KEY);
+            if (savedRole === 'operator' || savedRole === 'host') {
+                currentRole = savedRole;
+            } else {
+                currentRole = 'host';
+            }
+
+            const savedOpName = localStorage.getItem(OPERATOR_NAME_KEY);
+            if (savedOpName) operatorName = savedOpName;
+
+            const savedEmail = localStorage.getItem(ACTIVE_EMAIL_KEY);
+            if (savedEmail) activeUserEmail = savedEmail;
+
+            const savedPin = localStorage.getItem(PIN_STORAGE_KEY);
+            if (savedPin) hostPin = savedPin;
+        }
+
+        function applyRolePermissions() {
+            const avatar = document.getElementById('headerUserAvatar');
+            const roleName = document.getElementById('headerRoleName');
+            const roleDetail = document.getElementById('headerRoleDetail');
+            const notice = document.getElementById('operatorModeNotice');
+            const noticeEmail = document.getElementById('operatorEmailBannerText');
+            const manageUsersBtn = document.getElementById('manageUsersBtn');
+            const backupBtn = document.getElementById('backupBtn');
+            const restoreBtnWrap = document.getElementById('restoreBtnWrap');
+
+            if (currentRole === 'host') {
+                avatar.innerHTML = '<i class="fa-solid fa-user-shield"></i>';
+                avatar.className = 'user-avatar';
+                roleName.innerText = 'HOST (ADMIN)';
+                roleDetail.innerText = 'Full Control Access';
+                if (notice) notice.style.display = 'none';
+                if (manageUsersBtn) manageUsersBtn.style.display = 'inline-flex';
+                if (backupBtn) backupBtn.style.display = 'inline-flex';
+                if (restoreBtnWrap) restoreBtnWrap.style.display = 'inline-flex';
+            } else {
+                avatar.innerHTML = '<i class="fa-solid fa-user-pen"></i>';
+                avatar.className = 'user-avatar avatar-operator';
+                roleName.innerText = 'ENTRY OPERATOR';
+                const dispText = activeUserEmail ? activeUserEmail : (operatorName ? operatorName : 'Entry Only');
+                roleDetail.innerText = dispText;
+                if (notice) notice.style.display = 'flex';
+                if (noticeEmail) {
+                    noticeEmail.innerText = `Logged in as: ${activeUserEmail ? activeUserEmail : operatorName} (Access restricted ONLY to entering details).`;
+                }
+                if (manageUsersBtn) manageUsersBtn.style.display = 'none';
+                if (backupBtn) backupBtn.style.display = 'none';
+                if (restoreBtnWrap) restoreBtnWrap.style.display = 'none';
+            }
+
+            filterEntries();
+        }
+
+        // Email Login Handler
+        function handleEmailLogin() {
+            const emailInput = document.getElementById('loginEmailInput').value.trim();
+            if (!emailInput) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+            loginWithEmail(emailInput, false);
+        }
+
+        function loginWithEmail(email, isUrlAutoLogin) {
+            const lowerEmail = email.toLowerCase();
+
+            // Check if Host Email
+            if (lowerEmail === hostEmail.toLowerCase()) {
+                if (!isUrlAutoLogin) {
+                    const pin = prompt(`Enter Host Security PIN for ${hostEmail}:`);
+                    if (pin !== hostPin) {
+                        alert("Incorrect Host PIN.");
+                        return;
+                    }
+                }
+                currentRole = 'host';
+                activeUserEmail = hostEmail;
+                localStorage.setItem(ROLE_STORAGE_KEY, 'host');
+                localStorage.setItem(ACTIVE_EMAIL_KEY, hostEmail);
+                closeRoleModal();
+                applyRolePermissions();
+                showToast(`Welcome Host Admin (${hostEmail})! Full Access granted.`, "success");
+                return;
+            }
+
+            // Check if in Authorized Operators List
+            const foundOp = authorizedOperators.find(op => op.email.toLowerCase() === lowerEmail);
+            if (foundOp) {
+                currentRole = 'operator';
+                operatorName = foundOp.name;
+                activeUserEmail = foundOp.email;
+                localStorage.setItem(ROLE_STORAGE_KEY, 'operator');
+                localStorage.setItem(OPERATOR_NAME_KEY, foundOp.name);
+                localStorage.setItem(ACTIVE_EMAIL_KEY, foundOp.email);
+                closeRoleModal();
+                applyRolePermissions();
+                showToast(`Welcome ${foundOp.name}! You have access ONLY to enter donation details.`, "success");
+            } else {
+                alert(`Access Denied: The email "${email}" has NOT been added by the Host.\n\nPlease ask the Host (Admin) to add your email in the "Add Operator Email" settings.`);
+            }
+        }
+
+        function openRoleModal() {
+            selectedRoleInModal = currentRole;
+            selectRoleTab(currentRole);
+            document.getElementById('loginEmailInput').value = activeUserEmail || '';
+            document.getElementById('hostPinInput').value = '';
+            document.getElementById('operatorNameInput').value = operatorName || '';
+            document.getElementById('roleModal').classList.add('active');
+        }
+
+        function closeRoleModal() {
+            document.getElementById('roleModal').classList.remove('active');
+        }
+
+        function handleRoleModalBackdrop(e) {
+            if (e.target.id === 'roleModal') {
+                closeRoleModal();
+            }
+        }
+
+        function selectRoleTab(role) {
+            selectedRoleInModal = role;
+            const hostCard = document.getElementById('roleOptHost');
+            const opCard = document.getElementById('roleOptOperator');
+            const hostSec = document.getElementById('hostPinSection');
+            const opSec = document.getElementById('operatorNameSection');
+
+            if (role === 'host') {
+                hostCard.classList.add('selected');
+                opCard.classList.remove('selected');
+                if (currentRole !== 'host') {
+                    hostSec.style.display = 'block';
+                } else {
+                    hostSec.style.display = 'none';
+                }
+                opSec.style.display = 'none';
+            } else {
+                opCard.classList.add('selected');
+                hostCard.classList.remove('selected');
+                hostSec.style.display = 'none';
+                opSec.style.display = 'block';
+            }
+        }
+
+        function confirmRoleSwitch() {
+            if (selectedRoleInModal === 'host') {
+                if (currentRole !== 'host') {
+                    const pinVal = document.getElementById('hostPinInput').value.trim();
+                    if (pinVal !== hostPin) {
+                        alert("Incorrect Host Security PIN. Default PIN is 1234.");
+                        return;
+                    }
+                }
+                currentRole = 'host';
+                activeUserEmail = hostEmail;
+                localStorage.setItem(ROLE_STORAGE_KEY, 'host');
+                localStorage.setItem(ACTIVE_EMAIL_KEY, hostEmail);
+                showToast("Switched to Host (Admin) Mode with Full Access!", "success");
+            } else {
+                const opNameVal = document.getElementById('operatorNameInput').value.trim();
+                operatorName = opNameVal || 'Operator';
+                currentRole = 'operator';
+                localStorage.setItem(ROLE_STORAGE_KEY, 'operator');
+                localStorage.setItem(OPERATOR_NAME_KEY, operatorName);
+                showToast(`Switched to Entry Operator Mode (${operatorName})!`, "success");
+            }
+
+            closeRoleModal();
+            applyRolePermissions();
+        }
+
+        // Host User Management Modal (Add Operator by Email)
+        function openUserManagementModal() {
+            if (currentRole !== 'host') {
+                alert("Only Host (Admin) can manage operator email access.");
+                return;
+            }
+            renderOperatorsList();
+            document.getElementById('userManageModal').classList.add('active');
+        }
+
+        function closeUserManagementModal() {
+            document.getElementById('userManageModal').classList.remove('active');
+        }
+
+        function handleUserManageBackdrop(e) {
+            if (e.target.id === 'userManageModal') {
+                closeUserManagementModal();
+            }
+        }
+
+        function handleAddOperatorSubmit(e) {
+            e.preventDefault();
+            const emailInput = document.getElementById('newOpEmail').value.trim();
+            const nameInput = document.getElementById('newOpName').value.trim();
+
+            if (!emailInput || !nameInput) {
+                alert("Please fill in both email and operator name.");
+                return;
+            }
+
+            const exists = authorizedOperators.some(op => op.email.toLowerCase() === emailInput.toLowerCase());
+            if (exists) {
+                alert(`The email "${emailInput}" is already authorized.`);
+                return;
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            authorizedOperators.unshift({
+                email: emailInput,
+                name: nameInput,
+                dateAdded: today
+            });
+
+            saveAuthorizedOperators();
+            renderOperatorsList();
+            document.getElementById('addOperatorForm').reset();
+            showToast(`Operator ${nameInput} (${emailInput}) authorized for Entry-Only access!`, "success");
+        }
+
+        function removeOperatorEmail(email) {
+            if (confirm(`Revoke entry access for operator email: ${email}?`)) {
+                authorizedOperators = authorizedOperators.filter(op => op.email.toLowerCase() !== email.toLowerCase());
+                saveAuthorizedOperators();
+                renderOperatorsList();
+                showToast("Operator email access revoked.", "danger");
+            }
+        }
+
+        function copyOperatorLink(email) {
+            const baseUrl = window.location.href.split('?')[0];
+            const directUrl = `${baseUrl}?email=${encodeURIComponent(email)}`;
+            navigator.clipboard.writeText(directUrl).then(() => {
+                showToast("Operator direct entry link copied to clipboard!", "success");
+            }).catch(() => {
+                prompt("Copy this direct entry link for operator:", directUrl);
+            });
+        }
+
+        function renderOperatorsList() {
+            const container = document.getElementById('operatorListContainer');
+            const countBadge = document.getElementById('opCountBadge');
+            countBadge.innerText = `${authorizedOperators.length} Operators`;
+
+            if (authorizedOperators.length === 0) {
+                container.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: var(--slate-500); font-size: 0.82rem;">
+                        No operator emails added yet. Add an email above to grant entry-only access.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = authorizedOperators.map(op => `
+                <div class="operator-list-item">
+                    <div class="operator-list-info">
+                        <div class="operator-list-name">${escapeHtml(op.name)}</div>
+                        <div class="operator-list-email">
+                            <i class="fa-solid fa-envelope"></i> ${escapeHtml(op.email)}
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="btn btn-outline btn-sm" onclick="copyOperatorLink('${escapeHtml(op.email)}')" title="Copy Direct Access Link for this Operator">
+                            <i class="fa-solid fa-link"></i> Link
+                        </button>
+                        <button class="btn btn-danger-outline btn-sm" onclick="removeOperatorEmail('${escapeHtml(op.email)}')" title="Revoke Access">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function changeHostPIN() {
+            const oldPin = prompt("Enter Current Host PIN (Default: 1234):");
+            if (oldPin !== hostPin) {
+                alert("Incorrect current PIN.");
+                return;
+            }
+            const newPin = prompt("Enter New Host PIN (4-8 digits):");
+            if (newPin && newPin.trim().length >= 4) {
+                hostPin = newPin.trim();
+                localStorage.setItem(PIN_STORAGE_KEY, hostPin);
+                showToast("Host Security PIN updated successfully!", "success");
+            } else {
+                alert("PIN must be at least 4 digits.");
+            }
+        }
+
+        // Trigger Logo Upload with Host permission check
+        function triggerLogoUpload() {
+            if (currentRole !== 'host') {
+                alert("Only Host (Admin) can change organization logo. Please switch to Host mode.");
+                return;
+            }
+            document.getElementById('logoUploadInput').click();
+        }
+
+        // Load Organization Details
+        function loadOrgInfo() {
+            const savedOrg = localStorage.getItem(ORG_STORAGE_KEY);
+            if (savedOrg) {
+                try {
+                    orgInfo = JSON.parse(savedOrg);
+                } catch (e) {
+                    console.error("Failed to parse org info", e);
+                }
+            }
+            applyOrgInfo();
+        }
+
+        function applyOrgInfo() {
+            document.getElementById('orgDisplayTitle').innerText = orgInfo.name;
+            document.getElementById('orgSubtitle').innerText = orgInfo.subtitle;
+            document.getElementById('slipOrgName').innerText = orgInfo.name.toUpperCase();
+            document.getElementById('slipOrgSub').innerText = orgInfo.subtitle;
+            if (orgInfo.logo) {
+                const headerImg = document.getElementById('headerLogoImg');
+                if (headerImg) {
+                    headerImg.src = orgInfo.logo;
+                    headerImg.style.display = 'block';
+                }
+                const slipImg = document.getElementById('slipLogoImg');
+                if (slipImg) {
+                    slipImg.src = orgInfo.logo;
+                    slipImg.style.display = 'inline-block';
+                }
+            }
+        }
+
+        function handleLogoUpload(e) {
+            if (currentRole !== 'host') {
+                alert("Host authorization required to update logo.");
+                return;
+            }
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                orgInfo.logo = evt.target.result;
+                localStorage.setItem(ORG_STORAGE_KEY, JSON.stringify(orgInfo));
+                applyOrgInfo();
+                showToast("Logo icon updated successfully!", "success");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function editOrgName() {
+            if (currentRole !== 'host') {
+                alert("Only Host (Admin) can modify organization name & registration details.");
+                return;
+            }
+            const newName = prompt("Enter Organization / Trust / Society Name:", orgInfo.name);
+            if (newName && newName.trim()) {
+                orgInfo.name = newName.trim();
+                const newSub = prompt("Enter Subtitle / Reg No / Society Info:", orgInfo.subtitle);
+                if (newSub && newSub.trim()) {
+                    orgInfo.subtitle = newSub.trim();
+                }
+                localStorage.setItem(ORG_STORAGE_KEY, JSON.stringify(orgInfo));
+                applyOrgInfo();
+                showToast("Organization details updated!", "success");
+            }
+        }
+
+        // Load Data
+        function loadEntries() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                try {
+                    entries = JSON.parse(data);
+                } catch (e) {
+                    entries = [...demoEntries];
+                }
+            } else {
+                entries = [...demoEntries];
+                saveToStorage();
+            }
+        }
+
+        function saveToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+        }
+
+        function initDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('donationDate').value = today;
+        }
+
+        function generateNextReceiptNo() {
+            const year = new Date().getFullYear();
+            const prefix = `DON-${year}-`;
+
+            let highestNum = 0;
+            entries.forEach(e => {
+                if (e.receiptNo && e.receiptNo.startsWith(prefix)) {
+                    const num = parseInt(e.receiptNo.replace(prefix, ''), 10);
+                    if (!isNaN(num) && num > highestNum) highestNum = num;
+                }
+            });
+
+            const nextNum = String(highestNum + 1).padStart(3, '0');
+            const nextReceipt = `${prefix}${nextNum}`;
+            document.getElementById('receiptNo').value = nextReceipt;
+            document.getElementById('previewReceiptNo').innerText = nextReceipt;
+            return nextReceipt;
+        }
+
+        // Toggle Payment Reference field
+        function toggleRefField() {
+            const selectedMode = document.querySelector('input[name="payMode"]:checked').value;
+            const refGroup = document.getElementById('refGroup');
+            const payRefInput = document.getElementById('payRef');
+            if (selectedMode === 'Cash') {
+                refGroup.style.display = 'none';
+                payRefInput.value = '';
+            } else if (selectedMode === 'UPI') {
+                refGroup.style.display = 'block';
+                payRefInput.placeholder = 'e.g. UPI Ref / UTR / Transaction ID';
+            } else {
+                refGroup.style.display = 'block';
+                payRefInput.placeholder = 'e.g. Cheque No., Bank Name, Transfer Ref';
+            }
+        }
+
+        // Quick Amount Chips
+        function setQuickAmount(amt) {
+            document.getElementById('donationAmount').value = amt;
+            syncAmountChips();
+        }
+
+        function syncAmountChips() {
+            const currentVal = parseFloat(document.getElementById('donationAmount').value);
+            document.querySelectorAll('.amount-chip').forEach(chip => {
+                const chipVal = parseFloat(chip.innerText.replace('₹', '').replace(/,/g, ''));
+                if (chipVal === currentVal) {
+                    chip.classList.add('active');
+                } else {
+                    chip.classList.remove('active');
+                }
+            });
+        }
+
+        // Handle Form Submit
+        function handleFormSubmit(e) {
+            if (e) e.preventDefault();
+            saveEntryRecord(false);
+        }
+
+        function saveAndPrint() {
+            const form = document.getElementById('donationForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            const savedItem = saveEntryRecord(true);
+            if (savedItem) {
+                openReceiptModal(savedItem.id);
+            }
+        }
+
+        function saveEntryRecord(skipNotification) {
+            const form = document.getElementById('donationForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return null;
+            }
+
+            const editId = document.getElementById('editEntryId').value;
+            const date = document.getElementById('donationDate').value;
+            const receiptNo = document.getElementById('receiptNo').value.trim();
+            const donorName = document.getElementById('donorName').value.trim();
+            const donorPhone = document.getElementById('donorPhone').value.trim();
+            const donorEmail = document.getElementById('donorEmail').value.trim();
+            const donorSociety = document.getElementById('donorSociety').value.trim();
+            const amount = parseFloat(document.getElementById('donationAmount').value) || 0;
+            const category = document.getElementById('donationCategory').value;
+            const payMode = document.querySelector('input[name="payMode"]:checked').value;
+            const payRef = document.getElementById('payRef').value.trim();
+            const remarks = document.getElementById('donationRemarks').value.trim();
+            const signatory = document.getElementById('authorizedSignatory').value.trim();
+
+            if (amount <= 0) {
+                alert("Please enter a valid donation amount.");
+                return null;
+            }
+
+            let activeCreator = 'Host (Admin)';
+            if (currentRole === 'operator') {
+                activeCreator = activeUserEmail ? `Operator (${activeUserEmail})` : `Operator (${operatorName || 'Volunteer'})`;
+            }
+
+            let entryObj;
+
+            if (editId) {
+                if (currentRole !== 'host') {
+                    alert("Only Host (Admin) can edit existing donation records. Operators have Entry-Only access.");
+                    return null;
+                }
+                const index = entries.findIndex(x => x.id === editId);
+                if (index !== -1) {
+                    entries[index] = {
+                        ...entries[index],
+                        date,
+                        receiptNo,
+                        donorName,
+                        donorPhone,
+                        donorEmail,
+                        donorSociety,
+                        amount,
+                        category,
+                        payMode,
+                        payRef,
+                        remarks,
+                        signatory
+                    };
+                    entryObj = entries[index];
+                }
+                if (!skipNotification) showToast("Entry updated successfully!", "success");
+            } else {
+                // Create New
+                entryObj = {
+                    id: 'DON-' + Date.now(),
+                    date,
+                    receiptNo: receiptNo || generateNextReceiptNo(),
+                    donorName,
+                    donorPhone,
+                    donorEmail,
+                    donorSociety,
+                    amount,
+                    category,
+                    payMode,
+                    payRef,
+                    remarks,
+                    signatory,
+                    enteredBy: activeCreator,
+                    timestamp: Date.now()
+                };
+                entries.unshift(entryObj);
+                if (!skipNotification) showToast("Donation entry saved successfully!", "success");
+            }
+
+            saveToStorage();
+            resetForm();
+            renderDashboard();
+            return entryObj;
+        }
+
+        // Reset Form
+        function resetForm() {
+            document.getElementById('donationForm').reset();
+            document.getElementById('editEntryId').value = '';
+            document.getElementById('formTitle').innerText = 'New Donation Entry';
+            document.getElementById('saveBtnText').innerText = 'Save Donation Entry';
+            document.getElementById('refGroup').style.display = 'none';
+            document.getElementById('authorizedSignatory').value = '';
+            document.getElementById('donorEmail').value = '';
+            initDefaultDate();
+            generateNextReceiptNo();
+            syncAmountChips();
+        }
+
+        // Edit Entry (Host Only)
+        function editEntry(id) {
+            if (currentRole !== 'host') {
+                alert("Editing records is restricted to Host (Admin). Operators have access ONLY to enter new details.");
+                return;
+            }
+            const item = entries.find(x => x.id === id);
+            if (!item) return;
+
+            document.getElementById('editEntryId').value = item.id;
+            document.getElementById('donationDate').value = item.date;
+            document.getElementById('receiptNo').value = item.receiptNo;
+            document.getElementById('previewReceiptNo').innerText = item.receiptNo;
+            document.getElementById('donorName').value = item.donorName;
+            document.getElementById('donorPhone').value = item.donorPhone || '';
+            document.getElementById('donorEmail').value = item.donorEmail || '';
+            document.getElementById('donorSociety').value = item.donorSociety || '';
+            document.getElementById('donationAmount').value = item.amount;
+            document.getElementById('donationCategory').value = item.category;
+
+            // Mode radio
+            const modeRadio = document.querySelector(`input[name="payMode"][value="${item.payMode}"]`);
+            if (modeRadio) modeRadio.checked = true;
+            toggleRefField();
+            document.getElementById('payRef').value = item.payRef || '';
+            document.getElementById('donationRemarks').value = item.remarks || '';
+            document.getElementById('authorizedSignatory').value = item.signatory || '';
+
+            document.getElementById('formTitle').innerText = 'Edit Donation Entry';
+            document.getElementById('saveBtnText').innerText = 'Update Entry';
+            syncAmountChips();
+
+            // Scroll to form
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Delete Entry (Host Only)
+        function deleteEntry(id) {
+            if (currentRole !== 'host') {
+                alert("Deleting records is restricted to Host (Admin). Operators have access ONLY to enter new details.");
+                return;
+            }
+            const item = entries.find(x => x.id === id);
+            if (!item) return;
+
+            if (confirm(`Are you sure you want to delete receipt ${item.receiptNo} of ₹${item.amount.toLocaleString('en-IN')} for ${item.donorName}?`)) {
+                entries = entries.filter(x => x.id !== id);
+                saveToStorage();
+                renderDashboard();
+                showToast("Entry deleted successfully.", "danger");
+            }
+        }
+
+        // Render Table and Summary Stats
+        function renderDashboard() {
+            renderStats();
+            filterEntries();
+        }
+
+        function renderStats() {
+            const totalAmount = entries.reduce((acc, curr) => acc + (parseFloat(curr.amount) || 0), 0);
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            const todayEntries = entries.filter(x => x.date === todayStr);
+            const todayAmount = todayEntries.reduce((acc, curr) => acc + (parseFloat(curr.amount) || 0), 0);
+
+            const totalDonors = entries.length;
+            const avgDonation = totalDonors > 0 ? Math.round(totalAmount / totalDonors) : 0;
+
+            document.getElementById('statTotalAmount').innerText = '₹' + totalAmount.toLocaleString('en-IN');
+            document.getElementById('statTodayAmount').innerText = '₹' + todayAmount.toLocaleString('en-IN');
+            document.getElementById('statTodayCount').innerText = `${todayEntries.length} entries today`;
+            document.getElementById('statDonorCount').innerText = totalDonors;
+            document.getElementById('statAvgDonation').innerText = '₹' + avgDonation.toLocaleString('en-IN');
+            document.getElementById('recordCountBadge').innerText = `${totalDonors} Records`;
+        }
+
+        // Filter and Render Records Table
+        function filterEntries() {
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            const catFilter = document.getElementById('filterCategory').value.toLowerCase();
+            const modeFilter = document.getElementById('filterMode').value;
+
+            const filtered = entries.filter(item => {
+                const matchesSearch = !search ||
+                    item.donorName.toLowerCase().includes(search) ||
+                    (item.donorEmail && item.donorEmail.toLowerCase().includes(search)) ||
+                    (item.donorPhone && item.donorPhone.includes(search)) ||
+                    (item.donorSociety && item.donorSociety.toLowerCase().includes(search)) ||
+                    (item.receiptNo && item.receiptNo.toLowerCase().includes(search)) ||
+                    (item.remarks && item.remarks.toLowerCase().includes(search)) ||
+                    (item.enteredBy && item.enteredBy.toLowerCase().includes(search));
+
+                const matchesCategory = !catFilter || item.category.toLowerCase().includes(catFilter);
+                const matchesMode = !modeFilter || item.payMode === modeFilter;
+
+                return matchesSearch && matchesCategory && matchesMode;
+            });
+
+            renderTableBody(filtered);
+        }
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('filterMode').value = '';
+            filterEntries();
+        }
+
+        function getCategoryBadgeClass(cat) {
+            if (cat.includes('Annadaan') || cat.includes('Navratri')) return 'cat-annadaan';
+            if (cat.includes('Education')) return 'cat-education';
+            if (cat.includes('Medical')) return 'cat-medical';
+            if (cat.includes('Temple') || cat.includes('Building')) return 'cat-building';
+            return 'cat-general';
+        }
+
+        function getPaymentModeIcon(mode) {
+            if (mode === 'Cash') return '<i class="fa-solid fa-money-bill-wave" style="color: #16a34a;"></i>';
+            if (mode === 'UPI') return '<i class="fa-solid fa-qrcode" style="color: #6366f1;"></i>';
+            return '<i class="fa-solid fa-building-columns" style="color: #0284c7;"></i>';
+        }
+
+        function renderTableBody(list) {
+            const tbody = document.getElementById('recordsTableBody');
+
+            if (list.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="5">
+                        <div class="empty-state">
+                            <i class="fa-regular fa-folder-open"></i>
+                            <p style="font-weight: 600; font-size: 1rem;">No donation entries found</p>
+                            <p style="font-size: 0.82rem; margin-top: 4px;">Add a new entry or adjust your search filters.</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+                return;
+            }
+
+            tbody.innerHTML = list.map(item => {
+                const formattedDate = formatDateDisplay(item.date);
+                const catBadgeClass = getCategoryBadgeClass(item.category);
+                const modeIcon = getPaymentModeIcon(item.payMode);
+
+                // Build Action Buttons based on Role
+                let actionButtonsHtml = `
+                    <button class="btn btn-outline btn-sm" onclick="openReceiptModal('${item.id}')" title="Print Receipt">
+                        <i class="fa-solid fa-print"></i>
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="shareWhatsAppDirect('${item.id}')" title="WhatsApp Share" style="color: #16a34a;">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </button>
+                `;
+
+                if (currentRole === 'host') {
+                    actionButtonsHtml += `
+                        <button class="btn btn-outline btn-sm" onclick="editEntry('${item.id}')" title="Edit">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button class="btn btn-danger-outline btn-sm" onclick="deleteEntry('${item.id}')" title="Delete">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    `;
+                }
+
+                return `
+                <tr>
+                    <td>
+                        <span class="receipt-tag">${escapeHtml(item.receiptNo || '-')}</span>
+                        <div style="font-size: 0.75rem; color: var(--slate-500); margin-top: 3px;">${formattedDate}</div>
+                    </td>
+                    <td>
+                        <div class="donor-name-cell">
+                            <span>${escapeHtml(item.donorName)}</span>
+                            <div class="donor-meta">
+                                ${item.donorSociety ? `<span class="donor-society-tag"><i class="fa-solid fa-city"></i> ${escapeHtml(item.donorSociety)}</span>` : ''}
+                                ${item.donorEmail ? `<span class="donor-email-tag"><i class="fa-solid fa-envelope"></i> ${escapeHtml(item.donorEmail)}</span>` : ''}
+                                ${item.donorPhone ? `<span><i class="fa-solid fa-phone"></i> ${escapeHtml(item.donorPhone)}</span>` : ''}
+                                ${item.enteredBy ? `<span class="entered-by-tag"><i class="fa-solid fa-user-tag"></i> ${escapeHtml(item.enteredBy)}</span>` : ''}
+                            </div>
+                            ${item.remarks ? `<div style="font-size: 0.73rem; color: #b45309; font-style: italic; margin-top: 2px;">"${escapeHtml(item.remarks)}"</div>` : ''}
+                        </div>
+                    </td>
+                    <td>
+                        <div><span class="category-badge ${catBadgeClass}">${escapeHtml(item.category.split('(')[0])}</span></div>
+                        <div class="payment-badge" style="margin-top: 4px;">
+                            ${modeIcon} <span>${escapeHtml(item.payMode)}</span>
+                            ${item.payRef ? `<span style="font-size: 0.7rem; color: #64748b;">(${escapeHtml(item.payRef)})</span>` : ''}
+                        </div>
+                    </td>
+                    <td class="amount-cell">
+                        ₹${(parseFloat(item.amount) || 0).toLocaleString('en-IN')}
+                    </td>
+                    <td>
+                        <div class="actions-cell">
+                            ${actionButtonsHtml}
+                        </div>
+                    </td>
+                </tr>
+            `;
+            }).join('');
+        }
+
+        function formatDateDisplay(dStr) {
+            if (!dStr) return '';
+            const parts = dStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dStr;
+        }
+
+        // Number to Indian Rupees in Words conversion
+        function numberToWords(num) {
+            const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
+            const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+            num = Math.floor(num);
+            if (num === 0) return 'Zero Rupees Only';
+
+            function inWords(n) {
+                let str = '';
+                if (n >= 10000000) {
+                    str += inWords(Math.floor(n / 10000000)) + 'Crore ';
+                    n %= 10000000;
+                }
+                if (n >= 100000) {
+                    str += inWords(Math.floor(n / 100000)) + 'Lakh ';
+                    n %= 100000;
+                }
+                if (n >= 1000) {
+                    str += inWords(Math.floor(n / 1000)) + 'Thousand ';
+                    n %= 1000;
+                }
+                if (n >= 100) {
+                    str += inWords(Math.floor(n / 100)) + 'Hundred ';
+                    n %= 100;
+                }
+                if (n > 0) {
+                    if (n < 20) {
+                        str += a[n];
+                    } else {
+                        str += b[Math.floor(n / 10)] + ' ' + a[n % 10];
+                    }
+                }
+                return str;
+            }
+
+            return 'Rupees ' + inWords(num).trim() + ' Only';
+        }
+
+        // Open Receipt Modal
+        function openReceiptModal(id) {
+            const item = entries.find(x => x.id === id);
+            if (!item) return;
+
+            currentViewingEntry = item;
+
+            document.getElementById('slipReceiptNo').innerText = item.receiptNo || 'DON-REC';
+            document.getElementById('slipDate').innerText = formatDateDisplay(item.date);
+            document.getElementById('slipDonorName').innerText = item.donorName;
+
+            // Society
+            if (item.donorSociety) {
+                document.getElementById('slipSocietyRow').style.display = 'flex';
+                document.getElementById('slipDonorSociety').innerText = item.donorSociety;
+            } else {
+                document.getElementById('slipSocietyRow').style.display = 'none';
+            }
+
+            // Phone
+            if (item.donorPhone) {
+                document.getElementById('slipPhoneRow').style.display = 'flex';
+                document.getElementById('slipDonorPhone').innerText = item.donorPhone;
+            } else {
+                document.getElementById('slipPhoneRow').style.display = 'none';
+            }
+
+            // Email
+            if (item.donorEmail) {
+                document.getElementById('slipEmailRow').style.display = 'flex';
+                document.getElementById('slipDonorEmail').innerText = item.donorEmail;
+            } else {
+                document.getElementById('slipEmailRow').style.display = 'none';
+            }
+
+            document.getElementById('slipCategoryVal').innerText = item.category;
+
+            // Pay Mode & Ref
+            let payText = item.payMode;
+            if (item.payRef) {
+                payText += ` (Ref: ${item.payRef})`;
+            }
+            document.getElementById('slipPayMode').innerText = payText;
+
+            // Remarks
+            if (item.remarks) {
+                document.getElementById('slipRemarksRow').style.display = 'flex';
+                document.getElementById('slipRemarks').innerText = item.remarks;
+            } else {
+                document.getElementById('slipRemarksRow').style.display = 'none';
+            }
+
+            // Authorized Signatory
+            const signName = item.signatory ? item.signatory.trim() : '';
+            document.getElementById('slipSignatoryName').innerText = signName || 'Authorized Signatory';
+
+            // Entered By Footer
+            document.getElementById('slipEnteredBy').innerText = item.enteredBy ? `Issued by: ${item.enteredBy}` : '';
+
+            // Amount & Words
+            document.getElementById('slipAmount').innerText = '₹' + (parseFloat(item.amount) || 0).toLocaleString('en-IN');
+            document.getElementById('slipAmountWords').innerText = numberToWords(item.amount);
+
+            document.getElementById('receiptModal').classList.add('active');
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receiptModal').classList.remove('active');
+            currentViewingEntry = null;
+        }
+
+        function handleModalBackdrop(e) {
+            if (e.target.id === 'receiptModal') {
+                closeReceiptModal();
+            }
+        }
+
+        // Share Receipt on WhatsApp
+        function shareOnWhatsApp() {
+            if (!currentViewingEntry) return;
+            shareWhatsAppDirect(currentViewingEntry.id);
+        }
+
+        function shareWhatsAppDirect(id) {
+            const item = entries.find(x => x.id === id);
+            if (!item) return;
+
+            const phone = item.donorPhone ? item.donorPhone.replace(/[^0-9]/g, '') : '';
+            const phoneFormatted = phone.length === 10 ? '91' + phone : phone;
+
+            const message = `🙏 *DONATION RECEIPT - ${orgInfo.name.toUpperCase()}* 🙏\n` +
+                `----------------------------------\n` +
+                `📄 *Receipt No:* ${item.receiptNo}\n` +
+                `📅 *Date:* ${formatDateDisplay(item.date)}\n` +
+                `👤 *Donor Name:* ${item.donorName}\n` +
+                (item.donorSociety ? `🏢 *Society / Address:* ${item.donorSociety}\n` : '') +
+                (item.donorEmail ? `📧 *Email:* ${item.donorEmail}\n` : '') +
+                `💰 *Amount:* ₹${(parseFloat(item.amount) || 0).toLocaleString('en-IN')}\n` +
+                `📝 *Words:* ${numberToWords(item.amount)}\n` +
+                `🎯 *Purpose:* ${item.category}\n` +
+                `💳 *Payment Mode:* ${item.payMode} ${item.payRef ? '(' + item.payRef + ')' : ''}\n` +
+                (item.remarks ? `🌸 *Sankalp / Note:* ${item.remarks}\n` : '') +
+                (item.signatory ? `✍️ *Authorized Signatory:* ${item.signatory}\n` : '') +
+                `----------------------------------\n` +
+                `*${orgInfo.subtitle}*\n` +
+                `Thank you for your generous and noble support! 🙏`;
+
+            const encodedMsg = encodeURIComponent(message);
+            let url = `https://api.whatsapp.com/send?text=${encodedMsg}`;
+            if (phoneFormatted) {
+                url = `https://api.whatsapp.com/send?phone=${phoneFormatted}&text=${encodedMsg}`;
+            }
+
+            window.open(url, '_blank');
+        }
+
+        // Export to CSV / Excel
+        function exportToCSV() {
+            if (entries.length === 0) {
+                alert("No donation records to export.");
+                return;
+            }
+
+            const headers = ["Receipt No", "Date", "Donor Name", "Email", "Society / Address", "Phone", "Amount", "Purpose", "Payment Mode", "Ref / Cheque No", "Remarks", "Authorized Signatory", "Entered By"];
+            const rows = entries.map(e => [
+                `"${e.receiptNo || ''}"`,
+                `"${e.date || ''}"`,
+                `"${(e.donorName || '').replace(/"/g, '""')}"`,
+                `"${(e.donorEmail || '').replace(/"/g, '""')}"`,
+                `"${(e.donorSociety || '').replace(/"/g, '""')}"`,
+                `"${e.donorPhone || ''}"`,
+                `"${e.amount || 0}"`,
+                `"${(e.category || '').replace(/"/g, '""')}"`,
+                `"${e.payMode || ''}"`,
+                `"${(e.payRef || '').replace(/"/g, '""')}"`,
+                `"${(e.remarks || '').replace(/"/g, '""')}"`,
+                `"${(e.signatory || '').replace(/"/g, '""')}"`,
+                `"${(e.enteredBy || '').replace(/"/g, '""')}"`
+            ]);
+
+            const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Donations_${orgInfo.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("CSV file exported successfully!", "success");
+        }
+
+        // JSON Backup and Restore (Host Only)
+        function backupJSON() {
+            if (currentRole !== 'host') {
+                alert("Backup access is restricted to Host (Admin).");
+                return;
+            }
+            const backupData = {
+                orgInfo,
+                authorizedOperators,
+                exportDate: new Date().toISOString(),
+                entries
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+            const link = document.createElement('a');
+            link.setAttribute("href", dataStr);
+            link.setAttribute("download", `Donation_Backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Backup JSON downloaded!", "success");
+        }
+
+        function restoreJSON(e) {
+            if (currentRole !== 'host') {
+                alert("Restoring data is restricted to Host (Admin).");
+                return;
+            }
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                try {
+                    const parsed = JSON.parse(evt.target.result);
+                    if (Array.isArray(parsed.entries)) {
+                        entries = parsed.entries;
+                        if (parsed.orgInfo) {
+                            orgInfo = parsed.orgInfo;
+                            localStorage.setItem(ORG_STORAGE_KEY, JSON.stringify(orgInfo));
+                            applyOrgInfo();
+                        }
+                        if (Array.isArray(parsed.authorizedOperators)) {
+                            authorizedOperators = parsed.authorizedOperators;
+                            saveAuthorizedOperators();
+                        }
+                        saveToStorage();
+                        renderDashboard();
+                        showToast("Data restored successfully!", "success");
+                    } else if (Array.isArray(parsed)) {
+                        entries = parsed;
+                        saveToStorage();
+                        renderDashboard();
+                        showToast("Data restored successfully!", "success");
+                    } else {
+                        alert("Invalid backup file format.");
+                    }
+                } catch (err) {
+                    alert("Error parsing JSON file: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Toast Utility
+        function showToast(text, type = 'success') {
+            const toast = document.getElementById('toastMessage');
+            const toastText = document.getElementById('toastText');
+            toastText.innerText = text;
+            toast.className = 'toast show ' + (type === 'danger' ? 'toast-danger' : 'toast-success');
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+
+</body>
+
+</html>
